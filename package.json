@@ -26,7 +26,8 @@
     "test:unfiled-create": "bun run scripts/test-unfiled-create.ts",
     "test:trip-item-create": "bun run scripts/test-trip-item-create.ts",
     "test:conformance": "bun run build && bun run scripts/test-conformance.ts",
-    "test": "bun run test:trip-item-create && bun run test:unfiled-create && bun run test:unfiled-assign && bun run test:unfiled-convert && bun run test:conformance"
+    "test:results": "bun run scripts/test-results.ts",
+    "test": "bun run test:results && bun run test:trip-item-create && bun run test:unfiled-create && bun run test:unfiled-assign && bun run test:unfiled-convert && bun run test:conformance"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.18.1",

@@ -94,9 +94,13 @@ export function successResult(
   warnings: NormalizedIssue[] = [],
 ): CallToolResult {
   const envelope: NormalizedToolOutput = { ok: true, operation, data, warnings };
-  const suffix = warnings.length === 0 ? "" : ` with ${warnings.length} warning${warnings.length === 1 ? "" : "s"}`;
+  // Mirror the payload into the text channel. `structuredContent` alone is not
+  // enough: the MCP spec's guidance is that a tool with an outputSchema SHOULD
+  // also serialize the equivalent JSON into a text content block, so clients
+  // that do not surface structured content still receive the data. Serializing
+  // the same envelope keeps both channels from drifting.
   return {
-    content: textContent(`${operation} succeeded${suffix}.`),
+    content: textContent(JSON.stringify(envelope)),
     structuredContent: envelope,
   };
 }
@@ -130,7 +134,7 @@ export function errorResult(
 
   return {
     isError: true,
-    content: textContent(`${operation} failed: ${message}`),
+    content: textContent(JSON.stringify(envelope)),
     structuredContent: envelope,
   };
 }
