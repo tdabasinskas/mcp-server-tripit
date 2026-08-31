@@ -36,6 +36,27 @@ npx -y @modelcontextprotocol/inspector --cli bun run dist/index.js --method tool
 
 Expected result: the command returns the registered `tripit_*` tools.
 
+### HTTP Transport Handshake
+
+This verifies the Streamable HTTP transport starts and exposes its tools. It
+does not call TripIt and does not require TripIt credentials:
+
+```bash
+bun run build
+MCP_TRANSPORT=http PORT=3111 bun run dist/index.js &
+SERVER_PID=$!
+curl -s http://127.0.0.1:3111/health
+curl -s -X POST http://127.0.0.1:3111/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"curl","version":"0"}}}'
+kill $SERVER_PID
+```
+
+Expected result: `/health` returns `{"status":"ok"}` and the initialize call
+returns the `tripit` server info. Swap `initialize` for a `tools/list` call to
+confirm the registered `tripit_*` tools are exposed over HTTP.
+
 ### Read-Only Live TripIt Test
 
 This verifies end-to-end MCP transport, TripIt authentication, and a read-only API call:

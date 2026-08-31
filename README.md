@@ -76,6 +76,35 @@ If you use `fnox`, you can also run it like this:
 fnox x -- npx -y mcp-server-tripit
 ```
 
+## Transport
+
+The server speaks MCP over **stdio** by default. It can also serve the
+**Streamable HTTP** transport for clients that connect over HTTP.
+
+Select the transport with an environment variable or a CLI flag (flags take
+precedence over environment variables):
+
+| Setting | Environment variable | CLI flag | Default |
+| --- | --- | --- | --- |
+| Transport | `MCP_TRANSPORT=http` | `--http` (or `--stdio`) | `stdio` |
+| Bind host | `HOST` | `--host <host>` | `127.0.0.1` |
+| Bind port | `PORT` | `--port <port>` | `3000` |
+
+Passing `--host`, `--port`, or `--http` implies HTTP mode. Start an HTTP server
+with either form:
+
+```bash
+MCP_TRANSPORT=http PORT=3000 npx -y mcp-server-tripit
+# or
+npx -y mcp-server-tripit --http --port 3000
+```
+
+The MCP endpoint is served at `POST /mcp` and a liveness probe is available at
+`GET /health`. TripIt credentials are still read from the environment, so every
+request is authenticated with the same account. Sessions are stateless: each
+request is handled independently and no session ID is issued, so `GET`/`DELETE`
+on `/mcp` return `405`.
+
 ## What it can do
 
 Built on top of [`dvcrn/tripit-cli`](https://github.com/dvcrn/tripit-cli), this MCP server exposes the TripIt API for common travel workflows, including:
